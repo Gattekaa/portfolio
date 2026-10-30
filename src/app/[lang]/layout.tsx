@@ -6,6 +6,7 @@ import { themeScript } from "@/lib/theme";
 import { Header } from "@/components/site-controls";
 import { Footer } from "@/components/shared";
 import { SiteBackground } from "@/components/site-background";
+import { GoogleTag } from "@/components/google-tag";
 import "../globals.css";
 
 export const dynamicParams = false;
@@ -31,6 +32,7 @@ export default async function LocaleLayout({
   return (
     <html lang={t.locale} className={outfit.variable} suppressHydrationWarning>
       <head>
+        <GoogleTag />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="relative isolate">
