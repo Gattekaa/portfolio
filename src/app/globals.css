@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+:root,
+[data-theme="dark"] {
+  --canvas: #111210;
+  --surface: #191b17;
+  --raised: #24261f;
+  --ink: #f3f4ed;
+  --muted: #b8bdb0;
+  --subtle: #8e9686;
+  --line: #34392d;
+  --gold: #f0cf56;
+  --accent: #f0cf56;
+  --on-gold: #1d2115;
+  --nav: #191b17f5;
+  --ambient-glow: #c6ad3d1c;
+  --ambient-line: #a8af7510;
+  --ambient-contour: #a8af752d;
+  --ambient-grain: 0.075;
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  --canvas: #f7f8f2;
+  --surface: #eef0e7;
+  --raised: #e3e7d9;
+  --ink: #20261a;
+  --muted: #515b45;
+  --subtle: #626d54;
+  --line: #ccd2be;
+  --gold: #f0cf56;
+  --accent: #715a08;
+  --on-gold: #1d2115;
+  --nav: #f7f8f2f5;
+  --ambient-glow: #a78c2517;
+  --ambient-line: #6571430e;
+  --ambient-contour: #65714326;
+  --ambient-grain: 0.12;
+  color-scheme: light;
+}
+@theme inline {
+  --font-sans: var(--font-outfit);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-gold: var(--gold);
+  --color-accent: var(--accent);
+  --color-on-gold: var(--on-gold);
+  --color-nav: var(--nav);
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-enter: enter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@layer base {
+  html {
+    @apply scroll-smooth scroll-pt-28 bg-canvas motion-reduce:scroll-auto;
+  }
+  body {
+    @apply m-0 bg-canvas font-sans text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-gold text-on-gold;
+  }
+  button,
+  a,
+  summary {
+    @apply touch-manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    @apply cursor-pointer;
+  }
+  a,
+  button,
+  summary {
+    @apply focus-visible:outline-3 focus-visible:outline-offset-6 focus-visible:outline-accent;
+  }
+  p {
+    @apply leading-relaxed;
+  }
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media print {
+  :root,
+  [data-theme] {
+    --canvas: #fff;
+    --ink: #111;
+    --muted: #333;
+    --accent: #333;
+  }
+  @page {
+    margin: 1.7cm;
+  }
+}
