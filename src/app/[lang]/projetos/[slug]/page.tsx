@@ -54,7 +54,7 @@ export default async function ProjectPage({ params }: Props) {
                 name: profile.name,
                 url: `${profile.site}/${lang}`,
               },
-              inLanguage: t.locale,
+              ...(!project.visual ? { inLanguage: t.locale } : {}),
             },
             {
               "@type": "BreadcrumbList",

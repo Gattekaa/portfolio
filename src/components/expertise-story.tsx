@@ -163,7 +163,7 @@ export function ExpertiseStory({ lang, title, intro, items }: {
             <div className="relative flex min-h-0 flex-col gap-8 group-data-[immersive=true]/story:block group-data-[immersive=true]/story:overflow-hidden">
               {items.map((item, index) => {
                 const Icon = icons[index];
-                return <article
+                return <div
                   key={item.name}
                   data-story-panel
                   id={`${id}-panel-${index}`}
@@ -177,7 +177,7 @@ export function ExpertiseStory({ lang, title, intro, items }: {
                   <h3 className="text-2xl font-medium leading-tight tracking-[-.035em] lg:text-4xl">{item.name}</h3>
                   <p className="mt-4 max-w-[500px] text-base leading-relaxed text-muted lg:text-xl">{item.text}</p>
                   <ul className="mt-5 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 text-xs text-muted lg:mt-7 lg:text-sm">{item.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>
-                </article>;
+                </div>;
               })}
             </div>
           </div>
