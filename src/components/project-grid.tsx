@@ -3,13 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, LazyMotion, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { ArrowUpRightIcon } from "@phosphor-icons/react";
 import type { Locale, Project } from "@/lib/content";
 import { tags } from "@/lib/styles";
 import { ExperienceVisual } from "./experience-visual";
 import { ScrollMedia } from "./scroll-media";
 import { ProjectScene } from "./project-scene";
+
+const loadFeatures = () => import("@/lib/motion-features").then(module => module.default);
 
 export type ProjectPreview = Pick<Project, "slug" | "title" | "image" | "visual" | "category" | "tags"> & {
   alt: string; summary: string; categoryLabel: string;
@@ -67,15 +70,17 @@ export function ProjectGrid({ projects, lang, labels, action, empty, countLabel 
       </div>
       <span className="hidden whitespace-nowrap text-xs text-subtle md:block" aria-live="polite">{visible.length}{" "}{visible.length === 1 ? lang === "pt" ? "destaque" : "highlight" : countLabel}</span>
     </div>
+    <LazyMotion features={loadFeatures} strict>
     <AnimatePresence initial={false} mode="wait">
-      <motion.div key={filter} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.18 }}>
+      <m.div key={filter} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.18 }}>
         {filter === "all" ? <div data-project-sequence>
           {scenes.map((scene, index) => <ProjectScene key={scene.map(p => p.slug).join("-")} index={index} hasNext={index < scenes.length - 1} pair={scene.length > 1}>
             {scene.map((project, i) => card(project, i, scene.length === 1 && project.slug === "gatree"))}
           </ProjectScene>)}
         </div> : <div className="grid grid-cols-1 items-stretch gap-10 md:grid-cols-2 md:gap-x-8 md:gap-y-12">{visible.map((project, index) => card(project, index))}</div>}
         {visible.length === 0 && <p>{empty}</p>}
-      </motion.div>
+      </m.div>
     </AnimatePresence>
+    </LazyMotion>
   </>;
 }

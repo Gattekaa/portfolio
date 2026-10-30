@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { observeApproach } from "@/lib/observe-approach";
 
 export function ProjectDetailMotion({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLElement>(null);
@@ -23,6 +24,10 @@ export function ProjectDetailMotion({ children }: { children: ReactNode }) {
         const desktop = context.conditions.desktop;
         root.dataset.detailMotion = desktop ? "desktop" : "compact";
         const find = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector);
+        const observers: (() => void)[] = [];
+        const near = (element: Element | null | undefined, animate: () => void) => {
+          if (element) observers.push(observeApproach(element, () => context.add(animate)));
+        };
         const stage = find("[data-detail-hero-stage]");
         const track = find("[data-detail-hero-track]");
         const visual = find("[data-detail-hero-visual]");
@@ -63,7 +68,7 @@ export function ProjectDetailMotion({ children }: { children: ReactNode }) {
 
         const overview = find("[data-detail-overview]");
         const contextSection = find("[data-detail-context]");
-        if (overview && contextSection) {
+        if (overview && contextSection) near(overview, () => {
           gsap.fromTo("[data-detail-aside-panel]", { x: desktop ? -50 : 0, y: 65, rotate: -3, scale: 0.88 }, {
             x: 0, y: 0, rotate: 0, scale: 1, ease: "power2.out",
             scrollTrigger: { trigger: overview, start: "top 90%", end: "top 38%", scrub: 0.55 },
@@ -76,22 +81,22 @@ export function ProjectDetailMotion({ children }: { children: ReactNode }) {
             yPercent: 0, rotate: 0, stagger: 0.025, ease: "power1.out",
             scrollTrigger: { trigger: contextSection, start: "top 85%", end: "top 30%", scrub: 0.55 },
           });
-        }
+        });
 
-        root.querySelectorAll<HTMLElement>("[data-detail-heading]").forEach(title => {
+        root.querySelectorAll<HTMLElement>("[data-detail-heading]").forEach(title => { near(title.parentElement, () => {
           gsap.fromTo(title, { yPercent: 110, x: 35, rotate: -2 }, {
             yPercent: 0, x: 0, rotate: 0, ease: "power2.out",
             scrollTrigger: { trigger: title.parentElement, start: "top 94%", end: "top 58%", scrub: 0.5 },
           });
-        });
+        }); });
 
-        root.querySelectorAll<HTMLElement>("[data-project-application]").forEach((app, index) => {
+        root.querySelectorAll<HTMLElement>("[data-project-application]").forEach((app, index) => { near(app, () => {
           const reveal = gsap.timeline({ scrollTrigger: { trigger: app, start: "top 94%", end: "top 58%", scrub: 0.55 } });
           reveal
             .fromTo(app.querySelector("[data-app-heading]"), { x: desktop ? (index % 2 ? 35 : -35) : 0 }, { x: 0, duration: 0.55 }, 0)
             .fromTo(app.querySelector("[data-app-icon]"), { scale: 0.6, rotate: -20 }, { scale: 1, rotate: 0, duration: 0.55 }, 0)
             .fromTo(app.querySelector("[data-app-rule]"), { scaleX: 0 }, { scaleX: 1, duration: 0.65 }, 0.05);
-        });
+        }); });
 
         // Keep native details semantics and exclusivity. Only the newly opened
         // content animates; height changes refresh scroll positions separately.
@@ -106,44 +111,51 @@ export function ProjectDetailMotion({ children }: { children: ReactNode }) {
         };
         root.addEventListener("toggle", onToggle, true);
 
-        root.querySelectorAll<HTMLElement>("[data-detail-decision]").forEach((card, index) => {
+        root.querySelectorAll<HTMLElement>("[data-detail-decision]").forEach((card, index) => { near(card, () => {
           const step = gsap.timeline({ scrollTrigger: { trigger: card, start: "top 94%", end: "top 48%", scrub: 0.55 } });
           step
             .fromTo(card.querySelector("[data-decision-surface]"), { x: desktop ? (index % 2 ? 20 : -20) : 0, y: 85, scale: 0.9, rotate: desktop ? (index % 2 ? 2 : -2) : 0 }, { x: 0, y: 0, scale: 1, rotate: 0, duration: 0.65 }, 0)
             .fromTo(card.querySelector("[data-decision-rule]"), { scaleX: 0 }, { scaleX: 1, duration: 0.55 }, 0)
             .fromTo(card.querySelector("[data-decision-title]"), { yPercent: 110 }, { yPercent: 0, duration: 0.45 }, 0.1)
             .fromTo(card.querySelector("[data-decision-body]"), { y: 35 }, { y: 0, duration: 0.45 }, 0.17);
-        });
+        }); });
 
         const related = find("[data-detail-related]");
-        if (related) gsap.fromTo(related.querySelectorAll("[data-related-link]"), { y: 65, x: (index: number) => desktop ? (index % 2 ? 22 : -22) : 0 }, {
+        if (related) near(related, () => { gsap.fromTo(related.querySelectorAll("[data-related-link]"), { y: 65, x: (index: number) => desktop ? (index % 2 ? 22 : -22) : 0 }, {
           y: 0, x: 0, stagger: 0.09, ease: "power2.out",
           scrollTrigger: { trigger: related, start: "top 90%", end: "top 30%", scrub: 0.6 },
-        });
+        }); });
 
         const contact = find("#contato");
-        if (contact) {
+        if (contact) near(contact, () => {
           const finale = gsap.timeline({ scrollTrigger: { trigger: contact, start: "top 95%", end: "top 22%", scrub: 0.55 } });
           finale
             .fromTo("[data-contact-wash]", { scale: 0.015 }, { scale: 1.7, duration: 1, ease: "power1.inOut" }, 0)
             .fromTo("[data-contact-line]", { yPercent: 115, x: (index: number) => index ? 90 : -90, rotate: (index: number) => index ? 3 : -3 }, { yPercent: 0, x: 0, rotate: 0, stagger: 0.15, duration: 0.55, ease: "power2.out" }, 0.15);
-        }
+        });
         const footer = root.parentElement?.querySelector("footer");
-        if (footer) gsap.fromTo(footer.children, { y: 30 }, {
+        if (footer) near(footer, () => { gsap.fromTo(footer.children, { y: 30 }, {
           y: 0, stagger: 0.1, ease: "power2.out",
           scrollTrigger: { trigger: footer, start: "top 98%", end: "bottom bottom", scrub: 0.5 },
-        });
-        return () => { root.removeEventListener("toggle", onToggle, true); delete root.dataset.detailMotion; };
+        }); });
+        return () => { observers.forEach(disconnect => disconnect()); root.removeEventListener("toggle", onToggle, true); delete root.dataset.detailMotion; };
       });
 
       let refreshTimer: ReturnType<typeof setTimeout>;
-      const observer = new ResizeObserver(() => {
+      let overviewHeight: number | undefined;
+      const observer = new ResizeObserver(([entry]) => {
+        const height = entry.contentRect.height;
+        if (overviewHeight === undefined) { overviewHeight = height; return; }
+        if (height === overviewHeight) return;
+        overviewHeight = height;
         clearTimeout(refreshTimer);
         refreshTimer = setTimeout(() => { if (!disposed) ScrollTrigger.refresh(true); }, 250);
       });
       const overview = root.querySelector("[data-detail-overview]");
       if (overview) observer.observe(overview);
-      void document.fonts.ready.then(() => { if (!disposed) ScrollTrigger.refresh(true); });
+      if (document.fonts.status === "loading") {
+        void document.fonts.ready.then(() => { if (!disposed) ScrollTrigger.refresh(true); });
+      }
       teardown = () => { observer.disconnect(); clearTimeout(refreshTimer); media.revert(); };
     }
     const start = () => { void enhance().catch(() => undefined); };

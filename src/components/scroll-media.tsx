@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useReducedMotion, useScroll, useTransform } from "motion/react";
+import * as m from "motion/react-m";
 
 // A stable measurement wrapper keeps scroll motion independent of the filter's
 // layout animation. Each newly mounted cover owns and cleans up its tracking.
@@ -16,12 +17,12 @@ export function ScrollMedia({ children, className, direction = 0 }: { children: 
 
   return (
     <div ref={ref} className={`relative shrink-0 ${className}`}>
-      <motion.div
+      <m.div
         className="absolute inset-0 overflow-hidden rounded-3xl border border-line bg-surface"
         style={reduced ? undefined : { x, y, rotate, scale }}
       >
         {children}
-      </motion.div>
+      </m.div>
     </div>
   );
 }
